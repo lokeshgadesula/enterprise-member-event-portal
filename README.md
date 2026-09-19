@@ -29,6 +29,3 @@ APPLICATIONINSIGHTS_CONNECTION_STRING="..."
 
 ## Azure SQL
 `database/schema.sql` contains the relational schema, a reporting view, indexes, and a parameterized stored procedure.
-
-## Accuracy boundary
-Application Insights instrumentation is wired into the application. Actual Azure alert rules and production telemetry require deployment to your Azure subscription; this repository does not claim historical production alerts or performance numbers.
