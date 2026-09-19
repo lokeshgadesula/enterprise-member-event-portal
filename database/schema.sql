@@ -1,0 +1,16 @@
+CREATE TABLE Members(Id INT IDENTITY PRIMARY KEY,Name NVARCHAR(200) NOT NULL,Email NVARCHAR(320) NOT NULL UNIQUE);
+CREATE TABLE Events(Id INT IDENTITY PRIMARY KEY,Name NVARCHAR(200) NOT NULL,StartsAt DATETIME2 NOT NULL,Capacity INT NOT NULL);
+CREATE TABLE Engagements(Id INT IDENTITY PRIMARY KEY,MemberId INT NOT NULL REFERENCES Members(Id),Type NVARCHAR(100) NOT NULL,OccurredAt DATETIME2 NOT NULL);
+CREATE TABLE Registrations(Id INT IDENTITY PRIMARY KEY,MemberId INT NOT NULL REFERENCES Members(Id),EventId INT NOT NULL REFERENCES Events(Id),RegisteredAt DATETIME2 NOT NULL,CONSTRAINT UQ_Registration UNIQUE(MemberId,EventId));
+GO
+CREATE INDEX IX_Engagements_Member_Occurred ON Engagements(MemberId,OccurredAt DESC);
+GO
+CREATE VIEW dbo.vw_MemberEngagementSummary AS
+SELECT m.Id,m.Name,COUNT(e.Id) EngagementCount,MAX(e.OccurredAt) LastEngagementAt
+FROM Members m LEFT JOIN Engagements e ON e.MemberId=m.Id GROUP BY m.Id,m.Name;
+GO
+CREATE PROCEDURE dbo.usp_GetMemberEngagements @MemberId INT AS
+BEGIN SET NOCOUNT ON;
+ SELECT Id,Type,OccurredAt FROM Engagements WHERE MemberId=@MemberId ORDER BY OccurredAt DESC;
+END;
+GO
